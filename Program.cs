@@ -69,13 +69,25 @@ namespace HelloWorld
                 this.includes[cond.sender].Add(cond.reciever);
             }
         }
-        public bool enables(DCR_Graph, string ev){
+        public bool enables(DCR_Graph graph, string ev){
             if (!this.events.Contains(ev)) {return true;}
             if (!this.marking.included.Contains(ev)){return false;}
+            HashSet<string> inccon = new HashSet<string>();
+            foreach (var item in conditions[ev]) {   
+                if (this.marking.included.Contains(item)) {
+                    inccon.Add(item);
+                }
+            }
+            foreach (var item in inccon){
+                if (!this.marking.executed.Contains(item)){return false;}
+            }
+            
+            
             
 
 
-            return true
+
+            return true;
 
         }
 
