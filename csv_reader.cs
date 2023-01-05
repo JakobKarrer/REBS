@@ -6,9 +6,8 @@ namespace HelloWorld
 {
     class csv_reader
   {
-    public static void read_csv() {
-        var csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
-        {
+    public static List<List<record_event>> read_csv() {
+        var csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture) {
             HasHeaderRecord = false,
             Delimiter = ";",
         };
@@ -18,12 +17,16 @@ namespace HelloWorld
 
         var events = csvReader.GetRecords<record_event>();
 
-
+        string current_id;
+        List<T> trace_list = new List<T>();
         foreach (var ev in events) {
-                Console.Write(ev.id);
-                Console.WriteLine(ev.event_name);
+          if (current_id != ev.id) {
+              List<record_event> trace = new List<record_event>();
+              trace_list.Add(trace);
+              current_id = ev.id;
+          }
+          trace_list.Last().Add(ev);
         }
-        //record User(string FirstName, String LastName, string Occupation)
     }
   }
 }

@@ -7,7 +7,8 @@ namespace HelloWorld {
 
     public class program {
         static void Main(string[] args) {
-            Console.WriteLine(xml_parser.parse_xml());
+            List<List<som_relations>> relations = xml_parser.parse_xml();
+            
 
             
         }
