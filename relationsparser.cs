@@ -28,36 +28,51 @@ namespace HelloWorld
 
         //Store all the events that are possible
 
-        private HashSet<string> events = new HashSet<string>();
+        public Dictionary<string,string> events = new Dictionary<string,string>();
 
 
         ///Brug dictionaries istedet her. Det er Csharp equvelant
 
-        private Dictionary<string, HashSet<string>> conditions = new Dictionary<string, HashSet<string>>();
-        private Dictionary<string, HashSet<string>> milsetones = new Dictionary<string, HashSet<string>>();
-        private Dictionary<string, HashSet<string>> responses = new Dictionary<string, HashSet<string>>();
-        private Dictionary<string, HashSet<string>> excludes = new Dictionary<string, HashSet<string>>();
-        private Dictionary<string, HashSet<string>> includes = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> conditions = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> milsetones = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> responses = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> excludes = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> includes = new Dictionary<string, HashSet<string>>();
         public DCR_Marking marking =  new DCR_Marking();
 
         
-        /// captures state of the graph
-        public DCR_Graph(List<string> events, List<som_relations> conditions, List<som_relations> milestones, List<som_relations> responses, List<som_relations> excludes, List<som_relations> includes) {
+        /// captures state of the graphHashSet<string>
+        public DCR_Graph(List<som_relations> events, List<som_relations> conditions, List<som_relations> milestones, List<som_relations> responses, List<som_relations> excludes, List<som_relations> includes) {
             foreach (var even in events) {
 
+                //Console.WriteLine(even.Sender);
+                //Console.WriteLine(even.Receiver);
                 //Add events
-                events.Add(even);
+                //IN this case sender is event and reciever is the activity
+                
+                this.events.Add(even.Receiver,even.Receiver);
+                this.conditions.Add(even.Receiver, new HashSet<string>());
+                this.milsetones.Add(even.Receiver, new HashSet<string>());
+                this.responses.Add(even.Receiver, new HashSet<string>());
+                this.excludes.Add(even.Receiver, new HashSet<string>());
+                this.includes.Add(even.Receiver, new HashSet<string>());
+
             }
+            
             ///Conditions
             foreach (var cond in conditions) {
                 this.conditions[cond.Sender].Add(cond.Receiver);
             }
             ///milestones
             foreach (var cond in milestones) {
+                //Console.WriteLine(cond.Sender);
+                //Console.WriteLine(cond.Receiver);
                 this.milsetones[cond.Sender].Add(cond.Receiver);
+                Console.WriteLine(cond.Sender);
             }
             ///responses
             foreach (var cond in responses) {
+                //Console.WriteLine(cond.Sender);
                 this.responses[cond.Sender].Add(cond.Receiver);
             }
             ///excludes
@@ -70,7 +85,7 @@ namespace HelloWorld
             }
         }
         public bool enables(DCR_Graph graph, string ev){
-            if (!this.events.Contains(ev)) {return true;}
+            if (!this.events.ContainsKey(ev)) {return true;}
             if (!this.marking.included.Contains(ev)){return false;}
             
             //Select included conditions

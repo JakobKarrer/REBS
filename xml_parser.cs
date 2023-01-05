@@ -76,8 +76,8 @@ namespace HelloWorld
 
             var milestonePairs = milestone_source.Zip(milestone_target, (x, y) => new som_relations(y, x)).ToList();
             
-            List<List<som_relations>> retList = new List<List<som_relations>> {labelEventPairs,conditionPairs,responsePairs,
-                excludePairs,includePairs,milestonePairs};
+            List<List<som_relations>> retList = new List<List<som_relations>> {labelEventPairs,conditionPairs, milestonePairs,responsePairs,
+                excludePairs,includePairs,};
             
             return retList;
         }

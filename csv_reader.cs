@@ -17,8 +17,8 @@ namespace HelloWorld
 
         var events = csvReader.GetRecords<record_event>();
 
-        string current_id;
-        List<T> trace_list = new List<T>();
+        string current_id = "hello";
+        List<List<record_event>> trace_list = new List<List<record_event>>();
         foreach (var ev in events) {
           if (current_id != ev.id) {
               List<record_event> trace = new List<record_event>();
@@ -27,6 +27,7 @@ namespace HelloWorld
           }
           trace_list.Last().Add(ev);
         }
+        return trace_list;
     }
   }
 }
