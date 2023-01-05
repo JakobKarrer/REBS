@@ -6,7 +6,7 @@ namespace HelloWorld
     static class xml_parser {
         public static List<List<som_relations>> parse_xml() {
 
-            var xml = XDocument.Load("/Users/Dorph/Documents/CS/3Y/REACT/REB_A2/REBS/code.xml");
+            var xml = XDocument.Load("code.xml");
 
             // We pair the label names e.g. "Fill out application" with their corresponding eventname e.g. "Activity0" here.
             // Then the pairs are inserted into a list of tuples
