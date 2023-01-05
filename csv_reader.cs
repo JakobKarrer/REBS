@@ -23,8 +23,7 @@ namespace HelloWorld
                 Console.Write(ev.id);
                 Console.WriteLine(ev.event_name);
         }
-        //record User(string FirstName, String LastName, string Occupation);
-
+        //record User(string FirstName, String LastName, string Occupation)
     }
   }
 }
