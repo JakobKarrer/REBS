@@ -20,64 +20,64 @@ namespace HelloWorld
 
             var labelEventPairs = labelNames.Zip(eventNames, (x, y) => new som_relations(x, y)).ToList();
 
-            // // Conditions bytter rundt på sender og modtager
-            // var condition_source = xml.Descendants("condition")
-            //     .Attributes("sourceId")
-            //     .Select(element => element.Value);
+            // Conditions bytter rundt på sender og modtager
+            var condition_source = xml.Descendants("condition")
+                .Attributes("sourceId")
+                .Select(element => element.Value);
 
-            // var condition_target = xml.Descendants("condition")
-            //     .Attributes("targetId")
-            //     .Select(element => element.Value);
+            var condition_target = xml.Descendants("condition")
+                .Attributes("targetId")
+                .Select(element => element.Value);
 
-            // var conditionPairs = condition_source.Zip(condition_target, (x, y) => new Tuple<string, string>(x, y)).ToList();
+            var conditionPairs = condition_source.Zip(condition_target, (x, y) => new som_relations(y, x)).ToList();
 
-            // //Responses
-            // var response_source = xml.Descendants("response")
-            //     .Attributes("sourceId")
-            //     .Select(element => element.Value);
+            //Responses
+            var response_source = xml.Descendants("response")
+                .Attributes("sourceId")
+                .Select(element => element.Value);
 
-            // var response_target = xml.Descendants("response")
-            //     .Attributes("targetId")
-            //     .Select(element => element.Value);
+            var response_target = xml.Descendants("response")
+                .Attributes("targetId")
+                .Select(element => element.Value);
 
-            // var responsePairs = response_source.Zip(response_target, (x, y) => new Tuple<string, string>(x, y)).ToList();
+            var responsePairs = response_source.Zip(response_target, (x, y) => new som_relations(x,y)).ToList();
 
-            // //Exclude
-            // var exclude_source = xml.Descendants("exclude")
-            //     .Attributes("sourceId")
-            //     .Select(element => element.Value);
+            //Exclude
+            var exclude_source = xml.Descendants("exclude")
+                .Attributes("sourceId")
+                .Select(element => element.Value);
 
-            // var exclude_target = xml.Descendants("exclude")
-            //     .Attributes("targetId")
-            //     .Select(element => element.Value);
+            var exclude_target = xml.Descendants("exclude")
+                .Attributes("targetId")
+                .Select(element => element.Value);
 
-            // var excludePairs = exclude_source.Zip(exclude_target, (x, y) => new Tuple<string, string>(x, y)).ToList();
+            var excludePairs = exclude_source.Zip(exclude_target, (x, y) => new som_relations(x,y)).ToList();
+
+            //Include
+            var include_source = xml.Descendants("include")
+                .Attributes("sourceId")
+                .Select(element => element.Value);
+
+            var include_target = xml.Descendants("include")
+                .Attributes("targetId")
+                .Select(element => element.Value);
+
+            var includePairs = include_source.Zip(include_target, (x, y) => new som_relations(x,y)).ToList();
 
 
-            // //Include
-            // var include_source = xml.Descendants("include")
-            //     .Attributes("sourceId")
-            //     .Select(element => element.Value);
+            //Milestone - byttet rundt på sender og modtager
+            var milestone_source = xml.Descendants("milestone")
+                .Attributes("sourceId")
+                .Select(element => element.Value);
 
-            // var include_target = xml.Descendants("include")
-            //     .Attributes("targetId")
-            //     .Select(element => element.Value);
+            var milestone_target = xml.Descendants("milestone")
+                .Attributes("targetId")
+                .Select(element => element.Value);
 
-            // var includePairs = include_source.Zip(include_target, (x, y) => new Tuple<string, string>(x, y)).ToList();
-
-
-            // //Milestone - byttet rundt på sender og modtager
-            // var milestone_source = xml.Descendants("milestone")
-            //     .Attributes("sourceId")
-            //     .Select(element => element.Value);
-
-            // var milestone_target = xml.Descendants("milestone")
-            //     .Attributes("targetId")
-            //     .Select(element => element.Value);
-
-            // var milestonePairs = milestone_source.Zip(milestone_target, (x, y) => new Tuple<string, string>(x, y)).ToList();
+            var milestonePairs = milestone_source.Zip(milestone_target, (x, y) => new som_relations(y, x)).ToList();
             
-            List<List<som_relations>> retList = new List<List<som_relations>> {labelEventPairs};
+            List<List<som_relations>> retList = new List<List<som_relations>> {labelEventPairs,conditionPairs,responsePairs,
+                excludePairs,includePairs,milestonePairs};
             
             return retList;
         }
