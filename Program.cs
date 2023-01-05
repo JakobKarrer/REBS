@@ -72,6 +72,8 @@ namespace HelloWorld
         public bool enables(DCR_Graph graph, string ev){
             if (!this.events.Contains(ev)) {return true;}
             if (!this.marking.included.Contains(ev)){return false;}
+            
+            //Select included conditions
             HashSet<string> inccon = new HashSet<string>();
             foreach (var item in conditions[ev]) {   
                 if (this.marking.included.Contains(item)) {
@@ -82,11 +84,15 @@ namespace HelloWorld
                 if (!this.marking.executed.Contains(item)){return false;}
             }
             
-            
-            
+            //Select included milestones
+            HashSet<string> included_mile = new HashSet<string>();
+            foreach (var item in this.milestones[ev]) {
+                if (this.marking.included.Contains(item)){included_mile.Add(item);}
 
-
-
+            }
+            foreach (var item in marking.pending) {
+                if (included_mile.Contains(item)){return false;}                
+            }
             return true;
 
         }
