@@ -1,10 +1,10 @@
 using System.Xml.Linq;
 
 namespace HelloWorld
+
 {
     static class xml_parser {
-        public static void parse_xml() {
-
+        public static List<List<som_relations>> parse_xml() {
 
             var xml = XDocument.Load("C:/Users/JHK/Downloads/a1.2.2 (1).xml");
 
@@ -18,7 +18,7 @@ namespace HelloWorld
                 .Attributes("eventId")
                 .Select(element => element.Value);
 
-            var labelEventPairs = labelNames.Zip(eventNames, (x, y) => new Tuple<string, string>(x, y)).ToList();
+            var labelEventPairs = labelNames.Zip(eventNames, (x, y) => new som_relations(x, y)).ToList();
 
             foreach (Tuple<string, string> row in labelEventPairs)
             {

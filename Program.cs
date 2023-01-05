@@ -4,10 +4,19 @@ using System.Collections.Generic;
 
 namespace HelloWorld
 {
-    struct som_relations
+    public struct som_relations
     {
-        public string sender;
-        public string reciever;
+        private readonly int sender;
+        public int Sender { get { return sender; } }
+
+        private readonly int receiver;
+        public int Receiver { get { return receiver; } }
+
+        public som_relations(string sender, string receiver)
+        {
+            this.sender = sender;
+            this.receiver = receiver;
+        }
     }
 
     class DCR_Marking {
