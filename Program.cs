@@ -6,26 +6,39 @@ using System.Runtime.Serialization;
 namespace HelloWorld {
 
     public class program {
-        static void Main(string[] args) {
-            List<List<som_relations>> relations = xml_parser.parse_xml();
-            List<List<record_event>> all_events = csv_reader.read_csv();
-
-            DCR_Graph graph =  new DCR_Graph(relations[0], relations[1], relations[2], 
-                                                relations[3], relations[4], relations[5]);
+        static void Main(string[] args) 
+        {
+            List<List<som_relations>> xml_relations = xml_parser.parse_xml();
+            List<List<record_event>> csv_events = csv_reader.read_csv();
             
-            foreach(KeyValuePair<string, string> entry in graph.events)
+            // foreach(KeyValuePair<string, string> entry in graph.events)
+            // {
+            //     Console.WriteLine("Sender: {0} ----- Receiver: {1}",entry.Key, entry.Value);
+            //     // Console.WriteLine(graph.milestones[entry.Value]);
+            // }
+            int accepted_trace_count= 0;
+            int denied_trace_count =0;
+            csv_events.RemoveAt(0);
+            foreach (var list in csv_events)
             {
-                Console.WriteLine("Sender: {0} ----- Receiver: {1}",entry.Key, entry.Value);
-                // Console.WriteLine(graph.milestones[entry.Value]);
+                DCR_Graph graph =  new DCR_Graph(xml_relations[0], xml_relations[1], xml_relations[2], 
+                                xml_relations[3], xml_relations[4], xml_relations[5]);
+                foreach(var item in list)
+                {
+                    Console.WriteLine(item.event_name);
+                    if (!graph.execute(graph.events[item.event_name]))
+                    {
+                        denied_trace_count++;
+                        break;
+                    }
+                    if (graph.isAccepting())
+                    {
+                        accepted_trace_count++;
+                    }
+                    denied_trace_count++;
+                }
             }
-            // Console.WriteLine(graph.milestones.Count);
-            // Console.WriteLine(graph.includes.Count);
-            // Console.WriteLine(graph.excludes.Count);
-            // Console.WriteLine(graph.conditions.Count);
-            // Console.WriteLine(graph.events.Count);
-
-
-            
+            Console.WriteLine((accepted_trace_count,denied_trace_count));
         }
     }
 }

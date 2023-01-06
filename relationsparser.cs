@@ -39,14 +39,13 @@ namespace HelloWorld
         public Dictionary<string, HashSet<string>> excludes = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> includes = new Dictionary<string, HashSet<string>>();
         public DCR_Marking marking =  new DCR_Marking();
-
         
         /// captures state of the graphHashSet<string>
         public DCR_Graph(List<som_relations> events_, List<som_relations> conditions_, List<som_relations> milestones_, List<som_relations> responses_, 
         List<som_relations> excludes_, List<som_relations> includes_) {
             foreach (var even in events_) {
                 //For events dictionary - Sender: "First Payment" - Receiver "Activity15"
-                this.events.Add(even.Sender,even.Receiver);
+                this.events.Add(even.Sender.ToLower(),even.Receiver);
                 this.conditions.Add(even.Receiver, new HashSet<string>());
                 this.milestones.Add(even.Receiver, new HashSet<string>());
                 this.responses.Add(even.Receiver, new HashSet<string>());
@@ -76,8 +75,8 @@ namespace HelloWorld
             }
         }
 
-        public bool enabled(DCR_Graph graph, string ev){
-            if (!this.events.ContainsKey(ev)) {return true;}
+        public bool enabled(string ev){
+            if (!this.events.ContainsValue(ev)) {return true;}
             if (!this.marking.included.Contains(ev)){return false;}
             
             //Select included conditions
@@ -97,32 +96,30 @@ namespace HelloWorld
                 if (this.marking.included.Contains(item)){included_mile.Add(item);}
 
             }
-            foreach (var item in marking.pending) {
+            foreach (var item in this.marking.pending) {
                 if (included_mile.Contains(item)){return false;}                
             }
             return true;
         }
 
-        public DCR_Marking execute(DCR_Marking marking, string ev){
-            if (!this.events.ContainsKey(ev)){return true;}
+        public bool execute(string ev){
+            if (!this.events.ContainsValue(ev)){return false;}
 
-            if (!this.enabled(marking,ev)) {return marking;}
+            if (!this.enabled(ev)) {return false;}
 
-            DCR_Marking result = marking.clone();
+            // DCR_Marking result = marking.clone();
 
-            result.executed.Add(ev);
-            result.pending.Remove(ev);
-            result.pending.AddRange(this.responses[ev].ToList());
-            result.included.ExceptWith(this.excludes[ev].ToList());
-            result.included.AddRange(this.includes[ev].ToList());
-
-            return result;
+            this.marking.executed.Add(ev);
+            this.marking.pending.Remove(ev);
+            this.marking.pending.UnionWith(this.responses[ev]);
+            this.marking.included.ExceptWith(this.excludes[ev]);
+            this.marking.included.UnionWith(this.includes[ev]);
+            return true;
         }
 
         public HashSet<string> getIncludedPending(){
             HashSet<string> result = new HashSet<string>(this.marking.included);
             result.IntersectWith(this.marking.pending);
-
             return result;
         }
 

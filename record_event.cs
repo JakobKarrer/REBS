@@ -14,7 +14,7 @@ namespace HelloWorld
             Title = Title1;
             role = role1;
             date = date1;
-            event_name = event_name1;
+            event_name = event_name1.ToLower();
             event_type = event_type1;
     }
   }
