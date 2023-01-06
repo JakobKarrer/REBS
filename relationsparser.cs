@@ -54,14 +54,13 @@ namespace HelloWorld
                 this.includes.Add(even.Receiver, new HashSet<string>());
             }
             
-            ///Conditions
+            ///conditions - Sender og Receiver er byttet rundt
             foreach (var cond in conditions_) {
-                this.conditions[cond.Sender].Add(cond.Receiver);
+                this.conditions[cond.Receiver].Add(cond.Sender);
             }
-            ///milestones
+            ///milestones - Sender og Receiver er byttet rundt
             foreach (var cond in milestones_) {
-                this.milestones[cond.Sender].Add(cond.Receiver);
-                // Console.WriteLine(cond.Sender);
+                this.milestones[cond.Receiver].Add(cond.Sender);
             }
             ///responses
             foreach (var cond in responses_) {
@@ -82,13 +81,13 @@ namespace HelloWorld
             if (!this.marking.included.Contains(ev)){return false;}
             
             //Select included conditions
-            HashSet<string> inccon = new HashSet<string>();
+            HashSet<string> incl_con = new HashSet<string>();
             foreach (var item in conditions[ev]) {   
                 if (this.marking.included.Contains(item)) {
-                    inccon.Add(item);
+                    incl_con.Add(item);
                 }
             }
-            foreach (var item in inccon){
+            foreach (var item in incl_con){
                 if (!this.marking.executed.Contains(item)){return false;}
             }
             

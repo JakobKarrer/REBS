@@ -29,7 +29,7 @@ namespace HelloWorld
                 .Attributes("targetId")
                 .Select(element => element.Value);
 
-            var conditionPairs = condition_source.Zip(condition_target, (x, y) => new som_relations(y, x)).ToList();
+            var conditionPairs = condition_source.Zip(condition_target, (x, y) => new som_relations(x,y)).ToList();
 
             //Responses
             var response_source = xml.Descendants("response")
@@ -74,7 +74,7 @@ namespace HelloWorld
                 .Attributes("targetId")
                 .Select(element => element.Value);
 
-            var milestonePairs = milestone_source.Zip(milestone_target, (x, y) => new som_relations(y, x)).ToList();
+            var milestonePairs = milestone_source.Zip(milestone_target, (x, y) => new som_relations(x,y)).ToList();
             
             List<List<som_relations>> retList = new List<List<som_relations>> {labelEventPairs,conditionPairs, milestonePairs,responsePairs,
                 excludePairs,includePairs,};
