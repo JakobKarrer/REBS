@@ -20,9 +20,15 @@ namespace HelloWorld
     }
 
     class DCR_Marking {
-        public HashSet<string> executed = new HashSet<string>();
-        public HashSet<string> pending = new HashSet<string>();
-        public HashSet<string> included = new HashSet<string>();
+        public HashSet<string> included {get;private set;}
+        public HashSet<string> executed {get;private set;}
+        public HashSet<string> pending {get;private set;}
+
+        public DCR_Marking(HashSet<string> included_,HashSet<string> executed_,HashSet<string> pending_){
+            this.pending = included_;
+            this.executed = executed_;
+            this.included = included_;
+        }
     }
     class DCR_Graph {
 
@@ -38,11 +44,12 @@ namespace HelloWorld
         public Dictionary<string, HashSet<string>> responses = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> excludes = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> includes = new Dictionary<string, HashSet<string>>();
-        public DCR_Marking marking =  new DCR_Marking();
+        public DCR_Marking marking {get; private set;}
+
         
         /// captures state of the graphHashSet<string>
         public DCR_Graph(List<som_relations> events_, List<som_relations> conditions_, List<som_relations> milestones_, List<som_relations> responses_, 
-        List<som_relations> excludes_, List<som_relations> includes_) {
+        List<som_relations> excludes_, List<som_relations> includes_,DCR_Marking marking_) {
             foreach (var even in events_) {
                 //For events dictionary - Sender: "First Payment" - Receiver "Activity15"
                 this.events.Add(even.Sender.ToLower(),even.Receiver);
@@ -52,6 +59,11 @@ namespace HelloWorld
                 this.excludes.Add(even.Receiver, new HashSet<string>());
                 this.includes.Add(even.Receiver, new HashSet<string>());
             }
+            this.marking = marking_;
+            
+            // foreach (var item in marking_.included) {
+            //     Console.WriteLine("included {0}",item);
+            // }
             
             ///conditions - Sender og Receiver er byttet rundt
             foreach (var cond in conditions_) {
@@ -77,7 +89,10 @@ namespace HelloWorld
 
         public bool enabled(string ev){
             if (!this.events.ContainsValue(ev)) {return true;}
+            Console.WriteLine("1");
+            Console.WriteLine(ev);
             if (!this.marking.included.Contains(ev)){return false;}
+            Console.WriteLine("2");
             
             //Select included conditions
             HashSet<string> incl_con = new HashSet<string>();
@@ -86,9 +101,12 @@ namespace HelloWorld
                     incl_con.Add(item);
                 }
             }
+            Console.WriteLine("3");
+
             foreach (var item in incl_con){
                 if (!this.marking.executed.Contains(item)){return false;}
             }
+            Console.WriteLine("4");
             
             //Select included milestones
             HashSet<string> included_mile = new HashSet<string>();
@@ -96,16 +114,24 @@ namespace HelloWorld
                 if (this.marking.included.Contains(item)){included_mile.Add(item);}
 
             }
+            Console.WriteLine("5");
+
             foreach (var item in this.marking.pending) {
                 if (included_mile.Contains(item)){return false;}                
             }
+            Console.WriteLine("6");
+
             return true;
         }
 
         public bool execute(string ev){
-            if (!this.events.ContainsValue(ev)){return false;}
+            // Console.WriteLine(this.events.ContainsKey(ev));
+            if (!this.events.ContainsKey(ev)){return false;}
+            Console.WriteLine("a");
 
+            ev = this.events[ev];
             if (!this.enabled(ev)) {return false;}
+            Console.WriteLine("b");
 
             // DCR_Marking result = marking.clone();
 
