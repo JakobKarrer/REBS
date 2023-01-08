@@ -20,9 +20,9 @@ namespace HelloWorld
     }
 
     class DCR_Marking {
-        public HashSet<string> included {get;private set;}
-        public HashSet<string> executed {get;private set;}
-        public HashSet<string> pending {get;private set;}
+        public HashSet<string> included {get; set;}
+        public HashSet<string> executed {get; set;}
+        public HashSet<string> pending {get; set;}
 
         public DCR_Marking(HashSet<string> included_,HashSet<string> executed_,HashSet<string> pending_){
             this.pending = included_;
@@ -88,11 +88,12 @@ namespace HelloWorld
         }
 
         public bool enabled(string ev){
+            
+
+            //line unnnesesary cause of bugfix kept for posterity
             if (!this.events.ContainsValue(ev)) {return true;}
-            Console.WriteLine("1");
-            Console.WriteLine(ev);
+            //Console.WriteLine("true by default");
             if (!this.marking.included.Contains(ev)){return false;}
-            Console.WriteLine("2");
             
             //Select included conditions
             HashSet<string> incl_con = new HashSet<string>();
@@ -101,12 +102,10 @@ namespace HelloWorld
                     incl_con.Add(item);
                 }
             }
-            Console.WriteLine("3");
 
             foreach (var item in incl_con){
                 if (!this.marking.executed.Contains(item)){return false;}
             }
-            Console.WriteLine("4");
             
             //Select included milestones
             HashSet<string> included_mile = new HashSet<string>();
@@ -114,25 +113,23 @@ namespace HelloWorld
                 if (this.marking.included.Contains(item)){included_mile.Add(item);}
 
             }
-            Console.WriteLine("5");
 
             foreach (var item in this.marking.pending) {
                 if (included_mile.Contains(item)){return false;}                
             }
-            Console.WriteLine("6");
 
             return true;
         }
 
         public bool execute(string ev){
-            // Console.WriteLine(this.events.ContainsKey(ev));
-            if (!this.events.ContainsKey(ev)){return false;}
-            Console.WriteLine("a");
-
+            if (!this.events.ContainsKey(ev)) { 
+                //Console.WriteLine("cleared by default");
+                this.marking.executed.Add(ev);
+                return true;
+            }
+            
             ev = this.events[ev];
             if (!this.enabled(ev)) {return false;}
-            Console.WriteLine("b");
-
             // DCR_Marking result = marking.clone();
 
             this.marking.executed.Add(ev);

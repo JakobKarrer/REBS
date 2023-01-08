@@ -1,7 +1,6 @@
 using System.Xml.Linq;
 
 namespace HelloWorld
-
 {
     static class xml_parser {
         public static List<List<som_relations>> parse_relations_xml(string path) {
