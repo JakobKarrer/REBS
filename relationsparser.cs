@@ -20,9 +20,15 @@ namespace HelloWorld
     }
 
     class DCR_Marking {
-        public HashSet<string> executed = new HashSet<string>();
-        public HashSet<string> pending = new HashSet<string>();
-        public HashSet<string> included = new HashSet<string>();
+        public HashSet<string> included {get;private set;}
+        public HashSet<string> executed {get;private set;}
+        public HashSet<string> pending {get;private set;}
+
+        public DCR_Marking(HashSet<string> included_,HashSet<string> executed_,HashSet<string> pending_){
+            this.pending = included_;
+            this.executed = executed_;
+            this.included = included_;
+        }
     }
     class DCR_Graph {
 
@@ -34,81 +40,117 @@ namespace HelloWorld
         ///Brug dictionaries istedet her. Det er Csharp equvelant
 
         public Dictionary<string, HashSet<string>> conditions = new Dictionary<string, HashSet<string>>();
-        public Dictionary<string, HashSet<string>> milsetones = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, HashSet<string>> milestones = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> responses = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> excludes = new Dictionary<string, HashSet<string>>();
         public Dictionary<string, HashSet<string>> includes = new Dictionary<string, HashSet<string>>();
-        public DCR_Marking marking =  new DCR_Marking();
+        public DCR_Marking marking {get; private set;}
 
         
         /// captures state of the graphHashSet<string>
-        public DCR_Graph(List<som_relations> events, List<som_relations> conditions, List<som_relations> milestones, List<som_relations> responses, List<som_relations> excludes, List<som_relations> includes) {
-            foreach (var even in events) {
-
-                //Console.WriteLine(even.Sender);
-                //Console.WriteLine(even.Receiver);
-                //Add events
-                //IN this case sender is event and reciever is the activity
-                
-                this.events.Add(even.Receiver,even.Receiver);
+        public DCR_Graph(List<som_relations> events_, List<som_relations> conditions_, List<som_relations> milestones_, List<som_relations> responses_, 
+        List<som_relations> excludes_, List<som_relations> includes_,DCR_Marking marking_) {
+            foreach (var even in events_) {
+                //For events dictionary - Sender: "First Payment" - Receiver "Activity15"
+                this.events.Add(even.Sender.ToLower(),even.Receiver);
                 this.conditions.Add(even.Receiver, new HashSet<string>());
-                this.milsetones.Add(even.Receiver, new HashSet<string>());
+                this.milestones.Add(even.Receiver, new HashSet<string>());
                 this.responses.Add(even.Receiver, new HashSet<string>());
                 this.excludes.Add(even.Receiver, new HashSet<string>());
                 this.includes.Add(even.Receiver, new HashSet<string>());
-
             }
+            this.marking = marking_;
             
-            ///Conditions
-            foreach (var cond in conditions) {
-                this.conditions[cond.Sender].Add(cond.Receiver);
+            // foreach (var item in marking_.included) {
+            //     Console.WriteLine("included {0}",item);
+            // }
+            
+            ///conditions - Sender og Receiver er byttet rundt
+            foreach (var cond in conditions_) {
+                this.conditions[cond.Receiver].Add(cond.Sender);
             }
-            ///milestones
-            foreach (var cond in milestones) {
-                //Console.WriteLine(cond.Sender);
-                //Console.WriteLine(cond.Receiver);
-                this.milsetones[cond.Sender].Add(cond.Receiver);
-                Console.WriteLine(cond.Sender);
+            ///milestones - Sender og Receiver er byttet rundt
+            foreach (var cond in milestones_) {
+                this.milestones[cond.Receiver].Add(cond.Sender);
             }
             ///responses
-            foreach (var cond in responses) {
-                //Console.WriteLine(cond.Sender);
+            foreach (var cond in responses_) {
                 this.responses[cond.Sender].Add(cond.Receiver);
             }
             ///excludes
-            foreach (var cond in excludes) {
+            foreach (var cond in excludes_) {
                 this.excludes[cond.Sender].Add(cond.Receiver);
             }
             ///includes
-            foreach (var cond in includes) {
+            foreach (var cond in includes_) {
                 this.includes[cond.Sender].Add(cond.Receiver);
             }
         }
-        public bool enables(DCR_Graph graph, string ev){
-            if (!this.events.ContainsKey(ev)) {return true;}
+
+        public bool enabled(string ev){
+            if (!this.events.ContainsValue(ev)) {return true;}
+            Console.WriteLine("1");
+            Console.WriteLine(ev);
             if (!this.marking.included.Contains(ev)){return false;}
+            Console.WriteLine("2");
             
             //Select included conditions
-            HashSet<string> inccon = new HashSet<string>();
+            HashSet<string> incl_con = new HashSet<string>();
             foreach (var item in conditions[ev]) {   
                 if (this.marking.included.Contains(item)) {
-                    inccon.Add(item);
+                    incl_con.Add(item);
                 }
             }
-            foreach (var item in inccon){
+            Console.WriteLine("3");
+
+            foreach (var item in incl_con){
                 if (!this.marking.executed.Contains(item)){return false;}
             }
+            Console.WriteLine("4");
             
             //Select included milestones
             HashSet<string> included_mile = new HashSet<string>();
-            foreach (var item in this.milsetones[ev]) {
+            foreach (var item in this.milestones[ev]) {
                 if (this.marking.included.Contains(item)){included_mile.Add(item);}
 
             }
-            foreach (var item in marking.pending) {
+            Console.WriteLine("5");
+
+            foreach (var item in this.marking.pending) {
                 if (included_mile.Contains(item)){return false;}                
             }
+            Console.WriteLine("6");
+
             return true;
+        }
+
+        public bool execute(string ev){
+            // Console.WriteLine(this.events.ContainsKey(ev));
+            if (!this.events.ContainsKey(ev)){return false;}
+            Console.WriteLine("a");
+
+            ev = this.events[ev];
+            if (!this.enabled(ev)) {return false;}
+            Console.WriteLine("b");
+
+            // DCR_Marking result = marking.clone();
+
+            this.marking.executed.Add(ev);
+            this.marking.pending.Remove(ev);
+            this.marking.pending.UnionWith(this.responses[ev]);
+            this.marking.included.ExceptWith(this.excludes[ev]);
+            this.marking.included.UnionWith(this.includes[ev]);
+            return true;
+        }
+
+        public HashSet<string> getIncludedPending(){
+            HashSet<string> result = new HashSet<string>(this.marking.included);
+            result.IntersectWith(this.marking.pending);
+            return result;
+        }
+
+        public bool isAccepting(){
+            return (getIncludedPending().Count == 0);
         }
 
     }
