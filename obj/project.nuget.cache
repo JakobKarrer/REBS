@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "/9Ajue2k2EoqZpUQbT85aLZu0QOkddYU8pl0xnjum4k8a6vOahwY6adYGiXKh7qniTj3xWnPNoGL7kj7UCzTbQ==",
+  "dgSpecHash": "R3OUohQGglaWfTgy82VaO1OLGPuVEUp8KjaXJHAqrD6MfBslZ61hFFujLjBmLy01k1+3zWsuVICNFPXA2JOZAg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\JHK\\Desktop\\Datalogi\\REBS\\REBS.csproj",
+  "projectFilePath": "/Users/Dorph/Documents/CS/3Y/REACT/REB_A2/REBS/REBS.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\JHK\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512"
+    "/Users/Dorph/.nuget/packages/csvhelper/30.0.1/csvhelper.30.0.1.nupkg.sha512"
   ],
   "logs": []
 }
