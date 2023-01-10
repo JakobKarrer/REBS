@@ -88,12 +88,13 @@ namespace HelloWorld
         }
 
         public bool enabled(string ev){
-            
-
             //line unnnesesary cause of bugfix kept for posterity
             if (!this.events.ContainsValue(ev)) {return true;}
             //Console.WriteLine("true by default");
-            if (!this.marking.included.Contains(ev)){return false;}
+            if (!this.marking.included.Contains(ev)){
+                // Console.WriteLine("FALSE - ENABLED() l.95 - Not in Included: {0}",ev);
+                return false;
+            }
             
             //Select included conditions
             HashSet<string> incl_con = new HashSet<string>();
@@ -104,7 +105,10 @@ namespace HelloWorld
             }
 
             foreach (var item in incl_con){
-                if (!this.marking.executed.Contains(item)){return false;}
+                if (!this.marking.executed.Contains(item)){
+                    // Console.WriteLine("FALSE - ENABLED() l.109 - Not in Executed: {0}",item);
+                    return false;
+                }
             }
             
             //Select included milestones
@@ -115,7 +119,10 @@ namespace HelloWorld
             }
 
             foreach (var item in this.marking.pending) {
-                if (included_mile.Contains(item)){return false;}                
+                if (included_mile.Contains(item)){
+                    // Console.WriteLine("FALSE - ENABLED() l.123 - Milestone pending error: {0}",item);
+                    return false;
+                }                
             }
 
             return true;
@@ -125,18 +132,30 @@ namespace HelloWorld
             if (!this.events.ContainsKey(ev)) { 
                 //Console.WriteLine("cleared by default");
                 this.marking.executed.Add(ev);
+                this.marking.pending.Remove(ev);
                 return true;
             }
             
             ev = this.events[ev];
-            if (!this.enabled(ev)) {return false;}
+            if (!this.enabled(ev)) {
+                // Console.WriteLine("{0} not enabled",ev);
+                return false;
+            }
             // DCR_Marking result = marking.clone();
-
+            foreach (var item in this.marking.pending.ToList())
+            {
+                Console.WriteLine("{0} is pending",item);
+            }
             this.marking.executed.Add(ev);
             this.marking.pending.Remove(ev);
             this.marking.pending.UnionWith(this.responses[ev]);
+            this.marking.included.Add(ev);
             this.marking.included.ExceptWith(this.excludes[ev]);
             this.marking.included.UnionWith(this.includes[ev]);
+            foreach (var item in this.marking.pending.ToList())
+            {
+                Console.WriteLine("{0} is pending",item);
+            }
             return true;
         }
 
